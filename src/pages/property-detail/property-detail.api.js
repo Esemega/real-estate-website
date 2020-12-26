@@ -9,3 +9,8 @@ const urlEquipments = `${process.env.BASE_API_URL}/equipments`;
 
 export const getEquipments = () =>
   Axios.get(urlEquipments).then(({ data }) => data);
+
+const urlContact = `${process.env.BASE_API_URL}/contact`;
+
+export const sendContact = (contact) =>
+  Axios.post(urlContact, contact).then(({ data }) => data);
