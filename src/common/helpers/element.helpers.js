@@ -66,7 +66,7 @@ export const onSetFormErrors = ({ fieldErrors }) => {
 
 const setValue = (element, value) => {
   const elementType = element.tagName.toLowerCase();
-  if (elementType === 'select' || elementType === 'input') {
+  if (elementType === 'select' || elementType === 'input'|| elementType === 'textarea') {
     element.value = value;
   } else {
     element.textContent = value;
@@ -75,7 +75,7 @@ const setValue = (element, value) => {
 
 const onSetValue = (id, value) => {
   const element = document.getElementById(id);
-  console.log({ element });
+  // console.log({ element });
   if (element) {
     setValue(element, value);
   }
