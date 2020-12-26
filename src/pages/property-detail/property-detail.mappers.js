@@ -1,3 +1,11 @@
+export const mapContactFromVmToApi = (contact, id) => {
+  return {
+    email: contact.email,
+    message: contact.message,
+    propertyId: id,
+  };
+};
+
 export const mapPropertyFromApiToVm = (property, equipmentsFromServer) => {
   return {
     id: property.id,
