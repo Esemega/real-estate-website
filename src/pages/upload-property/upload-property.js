@@ -4,12 +4,12 @@ import {
   onSetError,
   onSetFormErrors,
   onAddFile,
-  onSetValues,
 } from '../../common/helpers';
 import {
   getSaleTypes,
   getEquipments,
   getProvinces,
+  uploadProperty,
 } from './upload-property.api';
 import {
   setCheckboxList,
@@ -18,8 +18,10 @@ import {
   formatDeleteFeatureButtonId,
   onRemoveFeature,
   onAddImage,
-  formatCheckboxId,
 } from './upload-property.helpers';
+import { formValidation } from './upload-property.validations';
+import { mapPropertyFromVmToApi } from './upload-property.mappers';
+import { history, routes } from '../../core/router';
 
 Promise.all([getSaleTypes(), getEquipments(), getProvinces()]).then(
   ([saleTypesList, equipmentsList, provincesList]) => {
@@ -49,6 +51,12 @@ let newProperty = {
   images: [],
 };
 
+const validateField = (field) => {
+  formValidation.validateField(field, newProperty[field]).then((result) => {
+    onSetError(field, result);
+  });
+};
+
 //String Properties
 Object.entries(newProperty)
   .filter(([, value]) => typeof value === 'string')
@@ -60,14 +68,11 @@ Object.entries(newProperty)
         [keyName]: value,
       };
 
-      // formValidation.validateField(keyName, contact[keyName]).then((result) => {
-      //   onSetError(keyName, result);
-      // });
+      validateField(keyName);
     });
   });
 
 // Array checkbox properties => saleTypes && equipments
-
 Object.entries(newProperty)
   .filter(
     ([keyName, value]) =>
@@ -86,12 +91,9 @@ Object.entries(newProperty)
         newProperty[keyName].splice(index, 1);
       }
 
-      // formValidation.validateField(keyName, contact[keyName]).then((result) => {
-      //   onSetError(keyName, result);
-      // });
+      validateField(keyName);
     });
   });
-
 
 // Array images properties => images base64
 Object.entries(newProperty)
@@ -108,46 +110,38 @@ Object.entries(newProperty)
         });
       }
 
-      // formValidation.validateField(keyName, contact[keyName]).then((result) => {
-      //   onSetError(keyName, result);
-      // });
+      validateField(keyName);
     });
   });
 
 //MANAGE FEATURE
 const onDelete = (featureToDelete) => {
-  // console.log({featureToDelete})
-  // console.log(formatDeleteFeatureButtonId(featureToDelete))
   onSubmitForm(formatDeleteFeatureButtonId(featureToDelete), () => {
     const index = newProperty.mainFeatures.indexOf(featureToDelete);
     newProperty.mainFeatures.splice(index, 1);
     onRemoveFeature(featureToDelete);
-    // console.log('mainFeatures', newProperty.mainFeatures);
   });
 };
 
 onSubmitForm('insert-feature-button', () => {
   const index = newProperty.mainFeatures.push(newFeature.value) - 1;
   onAddFeature(newProperty.newFeature);
-  // console.log('mainFeatures', newProperty.mainFeatures);
-
   onDelete(newProperty.mainFeatures[index]);
 });
 
+const onSave = () => {
+  const apiProperty = mapPropertyFromVmToApi(newProperty);
+  return uploadProperty(apiProperty);
+};
+
 //ON SUBMIT FORM
 onSubmitForm('save-button', () => {
-  console.log(newProperty);
-  // formValidation.validateForm(contact).then((result) => {
-  //   onSetFormErrors(result);
-  //   if (result.succeeded) {
-  //     onContact().then((apiContact) => {
-  //       console.log({ contact });
-  //       console.log({ apiContact });
-  //       window.alert(
-  //         'Gracias por confiar en nosotros. Le contactaremos lo antes posible.'
-  //       );
-  //       resetContactData();
-  //     });
-  //   }
-  // });
+  formValidation.validateForm(newProperty).then((result) => {
+    onSetFormErrors(result);
+    if (result.succeeded) {
+      onSave().then((apiProperty) => {
+        history.push(routes.propertyList);
+      });
+    }
+  });
 });
