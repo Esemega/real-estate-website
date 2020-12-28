@@ -18,7 +18,7 @@ export const mapPropertyFromApiToVm = (property, equipmentsFromServer) => {
     bathrooms: `${property.bathrooms} ${getBathroomWord(property.bathrooms)}`,
     locationUrl: property.locationUrl,
     mainFeatures: property.mainFeatures,
-    equipments: getEquipmentNames(property.equipmentIds, equipmentsFromServer),
+    equipments: getEquipmentListNames(property.equipmentIds, equipmentsFromServer),
     mainImage: Array.isArray(property.images) ? property.images[0] : '',
     images: Array.isArray(property.images) ? property.images : '',
   };
@@ -32,9 +32,10 @@ const getBathroomWord = (bathrooms) => {
   return bathrooms > 1 ? 'baños' : 'baño';
 };
 
-const getEquipmentNames = (equipmentsIds, equipmentsFromServer) => {
-  return equipmentsIds.map(
-    (id) =>
-      equipmentsFromServer.filter((equipment) => equipment.id === id)[0].name
-  );
+const getEquipmentName = (id, equipmentList) => {
+  return equipmentList.find((equipment) => equipment.id === id).name;
+};
+
+const getEquipmentListNames = (equipmentsIds, equipmentsFromServer) => {
+  return equipmentsIds.map((id) => getEquipmentName(id, equipmentsFromServer));
 };
