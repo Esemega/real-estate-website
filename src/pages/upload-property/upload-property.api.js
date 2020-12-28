@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios from 'axios';
 
 const urlSaleTypes = `${process.env.BASE_API_URL}/saleTypes`;
 
@@ -14,3 +14,8 @@ const urlProvinces = `${process.env.BASE_API_URL}/provinces`;
 
 export const getProvinces = () =>
   Axios.get(urlProvinces).then(({ data }) => data);
+
+const urlProperty = `${process.env.BASE_API_URL}/properties`;
+
+export const uploadProperty = (property) =>
+  Axios.post(urlProperty, property).then(({ data }) => data);
