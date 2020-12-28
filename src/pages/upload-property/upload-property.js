@@ -84,7 +84,10 @@ Object.entries(newProperty)
       const value = event.target.value;
       if (event.target.checked) {
         // if not checked => Add
-        newProperty[keyName].push(value);
+        newProperty = {
+          ...newProperty,
+          [keyName]: [...newProperty[keyName], value],
+        };
       } else {
         //if checked => delete
         const index = newProperty[keyName].indexOf(event.target.value);
@@ -106,7 +109,10 @@ Object.entries(newProperty)
       if (imageFile) {
         onAddFile('add-image', (image) => {
           onAddImage(image);
-          newProperty.images.push(image);
+          newProperty = {
+            ...newProperty,
+            images: [...newProperty.images, image],
+          };
         });
       }
 
